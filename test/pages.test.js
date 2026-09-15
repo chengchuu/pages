@@ -122,6 +122,11 @@ test("landing page has accessible static light presentation without scripts", as
   assert.match(html, /name="theme-color" content="#ffffff"/);
   assert.match(html, /<title>Pages demos<\/title>/);
   assert.match(html, /<h1>Pages demos<\/h1>/);
+  const favicons = html.match(/<link\b[^>]*\brel="icon"[^>]*>/g) || [];
+  assert.equal(favicons.length, 1);
+  assert.ok(favicons[0].includes("href=\"https://i.mazey.net/icon/fav/logo-dark-circle-transparent-32x32.png\""));
+  assert.ok(favicons[0].includes("type=\"image/png\""));
+  assert.ok(favicons[0].includes("sizes=\"32x32\""));
   assert.match(html, /color-scheme: light/);
   assert.doesNotMatch(html, /<script|prefers-color-scheme|data-theme="dark"/);
   for (const [ name, [ light ] ] of Object.entries(palette)) assert.ok(html.includes(`--color-${name}: ${light};`));

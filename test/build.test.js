@@ -13,6 +13,14 @@ const validatePages = require("../scripts/validate-pages");
 
 const document = "<!doctype html><html><head><title>Fixture</title></head><body><!-- keep --><h1>Fixture &amp; content</h1></body></html>";
 
+function assertFavicon(html) {
+  const tags = html.match(/<link\b[^>]*\brel="icon"[^>]*>/g) || [];
+  assert.equal(tags.length, 1);
+  assert.ok(tags[0].includes("href=\"https://i.mazey.net/icon/fav/logo-dark-circle-transparent-32x32.png\""));
+  assert.ok(tags[0].includes("type=\"image/png\""));
+  assert.ok(tags[0].includes("sizes=\"32x32\""));
+}
+
 async function write(root, filename, content) {
   const file = path.join(root, filename);
   await fs.mkdir(path.dirname(file), { recursive: true });
@@ -58,6 +66,7 @@ for (const mode of [ "development", "production" ]) {
       assert.ok(localAssets.some((asset) => asset.name.startsWith(`${name}/chunks/`) && asset.name.endsWith(".js")));
       assert.ok(localAssets.some((asset) => asset.name.startsWith(`${name}/assets/`) && asset.name.endsWith(".svg")));
       const html = await fs.readFile(path.join(root, "dist", name, "index.html"), "utf8");
+      assertFavicon(html);
       assert.doesNotMatch(html, /(?:src|href)="\.\.\//);
     }
     assert.deepEqual((await fs.readdir(path.join(root, "dist"))).sort(), [ "first", "second" ]);
@@ -204,6 +213,7 @@ test("served page bundle URLs encode special characters in page names", async (t
   await write(root, `src/pages/${name}/index.js`, "globalThis.fixture = true;");
   await build(root, "development", undefined, true);
   const html = await fs.readFile(path.join(root, "dist", name, "index.html"), "utf8");
+  assertFavicon(html);
   const urls = [ ...html.matchAll(/src="([^"]+)"/g) ].map((match) => match[1]);
   assert.deepEqual(urls, [ "/100%25%20done/dev-client.js", "/100%25%20done/index.js" ]);
   for (const url of urls) {

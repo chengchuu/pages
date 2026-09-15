@@ -2,6 +2,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const discover = require("./discover-pages");
 const palette = require("../config/pages-palette");
+const siteConfig = require("../config/site.config");
 
 function escapeHtml(value) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
@@ -23,6 +24,7 @@ async function generatePagesIndex(root) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="${palette.surface[0]}">
+  <link rel="icon" href="${escapeHtml(siteConfig.favicon.href)}" type="${escapeHtml(siteConfig.favicon.type)}" sizes="${escapeHtml(siteConfig.favicon.sizes)}">
   <title>Pages demos</title>
   <style>
 :root {
