@@ -177,6 +177,26 @@ test("missing optional files are normal; zero pages fail clearly", async (t) => 
   assert.throws(() => createConfig(root), /index.js must be a file/);
 });
 
+test("repository Link page is HTML-only and consumes sibling assets", async () => {
+  const root = path.resolve(__dirname, "..");
+  const page = discover(path.join(root, "src/pages")).find(({ name }) => name === "link");
+  assert.ok(page);
+  assert.equal(page.entry, null);
+  assert.deepEqual(page.config.externalAssets, {
+    development: {
+      styles: [ { href: "http://127.0.0.1:4132/link.css" } ],
+      scripts: [ { src: "http://127.0.0.1:4131/link.js", defer: true } ],
+    },
+    production: {
+      styles: [ { href: "https://i.mazey.net/style/lib/link.css" } ],
+      scripts: [ { src: "https://i.mazey.net/polestar/lib/link.js", defer: true } ],
+    },
+  });
+  const html = await fs.readFile(page.template, "utf8");
+  assert.match(html, /id="tiny-box"/);
+  assert.match(html, /window\.TINY_FOREIGN_BASE_URL/);
+});
+
 test("served page bundle URLs encode special characters in page names", async (t) => {
   const root = await fixture(t);
   const name = "100% done";
@@ -196,6 +216,8 @@ test("startup URLs use discovered pages and the listening address", async (t) =>
   for (const name of [ "z page", "example" ]) await write(root, `src/pages/${name}/index.html`, document);
   const configs = createConfig(root, "development", true);
   assert.equal(configs.filter((config) => config.devServer).length, 1);
+  assert.equal(configs[0].devServer.host, "127.0.0.1");
+  assert.equal(configs[0].devServer.port, 4130);
   for (const [ address, type, origin ] of [
     [ { address: "127.0.0.1", port: 9123 }, "http", "http://127.0.0.1:9123" ],
     [ { address: "::1", port: 9443 }, "https", "https://[::1]:9443" ],

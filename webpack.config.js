@@ -66,7 +66,7 @@ function createConfig(root, mode = "production", serving = false) {
       // One server serves all page compilers on the same port.
       devServer: pageIndex === 0 ? {
         host: "127.0.0.1",
-        port: 8080,
+        port: 4130,
         static: false,
         historyApiFallback: false,
         hot: false,

@@ -13,7 +13,7 @@ pnpm install
 npm run dev
 ```
 
-Open <http://127.0.0.1:8080/simple/> for the HTML-only example or <http://127.0.0.1:8080/example/> for the counter example. There is no root landing page or SPA fallback.
+Open <http://127.0.0.1:4130/simple/> for the HTML-only example or <http://127.0.0.1:4130/example/> for the counter example. There is no root landing page or SPA fallback.
 
 | Command                  | Purpose                                           |
 | :----------------------- | :------------------------------------------------ |
@@ -28,6 +28,23 @@ Open <http://127.0.0.1:8080/simple/> for the HTML-only example or <http://127.0.
 
 Use pnpm for dependency installation, additions, updates, and removals. Track `pnpm-lock.yaml`; keep `package-lock.json` untracked. Use `pnpm install --frozen-lockfile` to verify the recorded resolution. Use npm for project scripts and `npm pack` for package inspection. GitHub Actions uses `npm install` and npm scripts without npm dependency caching or `npm ci`; npm does not consume the pnpm lockfile.
 
+### Develop the Link page
+
+The Link page keeps its HTML, JavaScript, and CSS in separate projects. Start all three development servers:
+
+```bash
+# pages
+npm run dev
+
+# mazey-polestar
+npm run dev:link
+
+# mazey.css
+npm run dev:link
+```
+
+Open <http://127.0.0.1:4130/link/>. The page loads `link.js` from port `4131` and `link.css` from port `4132`. Refresh the page manually after CSS changes.
+
 ## GitHub Pages
 
 `npm run build:pages` runs the production build, then generates `dist/index.html` from discovered demos. It links to each independent page with relative URLs. The landing page has a static light theme, inline semantic colors, and no JavaScript. Its template belongs to `scripts/generate-pages-index.js`; CSS and the supplied palette pairs belong to `config/pages-index.css` and `config/pages-palette.js`. Only light palette values are emitted.
@@ -38,7 +55,7 @@ Ordinary builds can remove this root document. Use `build:pages` to recreate the
 
 The workflow builds and validates on pushes to `main` and manual dispatch, then deploys `dist/` through the `github-pages` environment. Before enabling delivery, verify that the remote is `chengchuu/pages`, Pages uses GitHub Actions as its source, and environment rules allow the intended branch. Manual dispatch must also comply with those rules. No npm publication is included.
 
-Before deployment, serve the artifact under `/pages/` and check the root directory, both demos, counter behavior, navigation, runtime assets, and browser errors. Local checks do not prove GitHub configuration or live deployment. After an authorized deployment, verify all three public routes. Recover a regression through an authorized revert and rebuild; CI dependency resolution can differ from the local lockfile.
+Before deployment, serve the artifact under `/pages/` and check the root directory, all demos, counter behavior, navigation, runtime assets, and browser errors. Local checks do not prove GitHub configuration or live deployment. After an authorized deployment, verify the root and all discovered public routes. Recover a regression through an authorized revert and rebuild; CI dependency resolution can differ from the local lockfile.
 
 ## Add a page
 
@@ -58,8 +75,8 @@ Project defaults live in `config/external-assets.config.js`. Both environments i
 module.exports = {
   externalAssets: {
     development: {
-      styles: [ { href: "http://localhost:9202/local/index.css" } ],
-      scripts: [ { src: "http://localhost:5513/local/index.js", defer: true } ],
+      styles: [ { href: "http://127.0.0.1:4132/link.css" } ],
+      scripts: [ { src: "http://127.0.0.1:4131/link.js", defer: true } ],
     },
     production: {
       styles: [ { href: "https://i.mazey.net/net/index.css" } ],

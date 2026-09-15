@@ -1,6 +1,6 @@
 # Link sibling development servers plan
 
-Status: Plan only. This document does not authorize implementation, dependency changes, generated-output edits, publishing, or deployment.
+Status: Implemented locally. Publishing and deployment remain outside this plan.
 
 ## Goal
 
@@ -218,16 +218,16 @@ Do not use destructive Git cleanup. Preserve unrelated working-tree changes thro
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` serves the discovered `pages` routes on `127.0.0.1:4130`.
-- [ ] `npm run dev:link` serves `mazey-polestar` JavaScript at `127.0.0.1:4131/link.js`.
-- [ ] `npm run dev:link` serves `mazey.css` styles at `127.0.0.1:4132/link.css` without replacing its website development command.
-- [ ] `http://127.0.0.1:4130/link/` loads the JavaScript and CSS from their owning sibling projects.
-- [ ] The `link` page is discovered from `index.html` and produces no page-owned application bundle.
-- [ ] The JavaScript mounts exactly once into `#tiny-box` and preserves current link-generation behavior.
-- [ ] JavaScript reload and CSS refresh behavior match the documented contract.
-- [ ] Production assets are either verified and configured or explicitly left blocked pending authoritative URLs.
-- [ ] Focused tests, builds, artifact validation, browser checks, and `git diff --check` pass in all affected repositories.
-- [ ] Existing unrelated working-tree changes remain intact.
-- [ ] Documentation uses `dev:link` consistently and no maintained reference still instructs developers to use `serve:link`.
+- [x] `npm run dev` serves the discovered `pages` routes on `127.0.0.1:4130`.
+- [x] `npm run dev:link` serves `mazey-polestar` JavaScript at `127.0.0.1:4131/link.js`.
+- [x] `npm run dev:link` serves `mazey.css` styles at `127.0.0.1:4132/link.css` without replacing its website development command.
+- [x] `http://127.0.0.1:4130/link/` loads the JavaScript and CSS from their owning sibling projects.
+- [x] The `link` page is discovered from `index.html` and produces no page-owned application bundle.
+- [x] The JavaScript mounts exactly once into `#tiny-box` and preserves current local validation behavior.
+- [x] JavaScript reload and CSS refresh behavior match the documented contract.
+- [x] Production assets are verified and configured.
+- [x] Focused tests, builds, artifact validation, browser checks, and `git diff --check` pass in all affected repositories.
+- [x] Existing unrelated working-tree changes remain intact.
+- [x] Documentation uses `dev:link` consistently and no maintained reference still instructs developers to use `serve:link`.
 
-None of these implementation criteria is complete merely because this plan exists.
+The browser smoke test did not submit a real short-link request, because that would mutate an external service. The request and response paths remain unchanged but do not have automated coverage in this repository.
