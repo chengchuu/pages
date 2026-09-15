@@ -11,16 +11,16 @@ The selected local contract is:
 | Project           | Responsibility | Command            | Development URL                         |
 |:------------------|:---------------|:-------------------|:----------------------------------------|
 | `pages`            | HTML           | `npm run dev`      | `http://127.0.0.1:4130/link/`           |
-| `mazey-polestar`   | JavaScript     | `npm run dev:link` | `http://127.0.0.1:4131/link.js`         |
-| `mazey.css`        | CSS            | `npm run dev:link` | `http://127.0.0.1:4132/link.css`        |
+| `mazey-polestar`   | JavaScript     | `npm run dev`      | `http://127.0.0.1:4131/link.js`         |
+| `mazey.css`        | CSS            | `npm run dev`      | `http://127.0.0.1:4132/link.css`        |
 
 All three processes are expected to run while developing the integrated page.
 
 ## Confirmed decisions
 
 - Use additive entry-specific development servers.
-- Rename the existing `mazey-polestar` command from `serve:link` to `dev:link`; do not retain the old alias unless an external consumer is discovered before implementation.
-- Add `dev:link` to `mazey.css` without replacing its documentation-site `dev` command.
+- Use `npm run dev` in both package projects to compile and serve every maintained source-backed library; do not retain the former Link-only aliases.
+- Keep `npm run dev:site` in `mazey.css` as the separate documentation-site and playground command.
 - Keep `pages` as the only owner of the new `link` HTML page.
 - Keep `mazey-polestar` as the owner of the `link.js` source and bundle.
 - Keep `mazey.css` as the owner of the `link.css` source and package artifact.
@@ -28,7 +28,7 @@ All three processes are expected to run while developing the integrated page.
 - Do not add a repository-level process orchestrator. Developers start the three processes separately.
 - Accept manual browser refresh for CSS changes in the initial implementation.
 
-## Current behavior and cause
+## Original behavior and cause
 
 `pages` discovers immediate directories containing `src/pages/<name>/index.html`. Its optional `index.js` and `page.config.js` files are detected independently. This already supports an HTML-only page that loads external JavaScript and CSS, but the current development server uses port `8080`, and no `link` page exists.
 
@@ -50,7 +50,7 @@ The missing integration is therefore development-server and page configuration, 
 
 ### `mazey-polestar`
 
-- Rename the `serve:link` package script to `dev:link`.
+- Add an aggregate `dev` package script and remove the former Link-only development scripts.
 - Change the `link` development-server port from `9202` to `4131`.
 - Preserve the existing `build:link` production command and JavaScript entry.
 - Update maintained references to the old command or port, including the nested `src/pages/link/AGENTS.md` guide.
@@ -59,7 +59,7 @@ The missing integration is therefore development-server and page configuration, 
 
 ### `mazey.css`
 
-- Add a `dev:link` package script that serves the `link` package entry on port `4132`.
+- Add an aggregate `dev` package script that serves every maintained source-backed package entry on port `4132`.
 - Add a focused development configuration around the existing package build instead of repurposing `webpack.site.config.js`.
 - Preserve the current documentation-site `dev` command, `build:link`, `watch:link`, package exports, and published artifact paths.
 - Update maintained documentation for the new command.
@@ -171,7 +171,7 @@ Extend focused tests to verify port `4130`, page discovery, development and prod
 1. Run `npm test`.
 2. Run the repository's lint check without accepting unrelated formatting changes.
 3. Run `npm run build:link`.
-4. Start `npm run dev:link` and verify `http://127.0.0.1:4131/link.js`.
+4. Start `npm run dev` and verify `http://127.0.0.1:4131/link.js`.
 5. Run `git diff --check`.
 6. Inspect `git status --short` and the final diff.
 
@@ -184,7 +184,7 @@ Add focused regression coverage for the renamed command, port contract, and any 
 3. Run `npm test`.
 4. Run `npm run build:link`.
 5. Run `npm run package:validate`.
-6. Start `npm run dev:link` and verify `http://127.0.0.1:4132/link.css`.
+6. Start `npm run dev` and verify `http://127.0.0.1:4132/link.css`.
 7. Run `npm run format:check`.
 8. Run `git diff --check`.
 9. Inspect `git status --short` and the final diff.
@@ -211,7 +211,7 @@ Rollback requires no data migration:
 1. Remove the newly added `pages/src/pages/link/` source directory.
 2. Restore the previous `pages` development-server port.
 3. Restore the `mazey-polestar` script name and port, plus any references changed with them.
-4. Remove the new `mazey.css` `dev:link` script and focused development configuration.
+4. Remove the new `mazey.css` aggregate `dev` script and development configuration.
 5. Regenerate only the artifacts owned by an affected source change, then rerun the focused checks.
 
 Do not use destructive Git cleanup. Preserve unrelated working-tree changes throughout rollback.
@@ -219,8 +219,8 @@ Do not use destructive Git cleanup. Preserve unrelated working-tree changes thro
 ## Acceptance criteria
 
 - [x] `npm run dev` serves the discovered `pages` routes on `127.0.0.1:4130`.
-- [x] `npm run dev:link` serves `mazey-polestar` JavaScript at `127.0.0.1:4131/link.js`.
-- [x] `npm run dev:link` serves `mazey.css` styles at `127.0.0.1:4132/link.css` without replacing its website development command.
+- [x] `npm run dev` serves `mazey-polestar` JavaScript at `127.0.0.1:4131/link.js`.
+- [x] `npm run dev` serves `mazey.css` styles at `127.0.0.1:4132/link.css` without replacing `npm run dev:site`.
 - [x] `http://127.0.0.1:4130/link/` loads the JavaScript and CSS from their owning sibling projects.
 - [x] The `link` page is discovered from `index.html` and produces no page-owned application bundle.
 - [x] The JavaScript mounts exactly once into `#tiny-box` and preserves current local validation behavior.
@@ -228,6 +228,6 @@ Do not use destructive Git cleanup. Preserve unrelated working-tree changes thro
 - [x] Production assets are verified and configured.
 - [x] Focused tests, builds, artifact validation, browser checks, and `git diff --check` pass in all affected repositories.
 - [x] Existing unrelated working-tree changes remain intact.
-- [x] Documentation uses `dev:link` consistently and no maintained reference still instructs developers to use `serve:link`.
+- [x] Documentation uses the aggregate package `dev` commands consistently and no maintained reference instructs developers to use a Link-only development command.
 
 The browser smoke test did not submit a real short-link request, because that would mutate an external service. The request and response paths remain unchanged but do not have automated coverage in this repository.

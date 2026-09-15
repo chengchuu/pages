@@ -37,10 +37,10 @@ The Link page keeps its HTML, JavaScript, and CSS in separate projects. Start al
 npm run dev
 
 # mazey-polestar
-npm run dev:link
+npm run dev
 
 # mazey.css
-npm run dev:link
+npm run dev
 ```
 
 Open <http://127.0.0.1:4130/link/>. The page loads `link.js` from port `4131` and `link.css` from port `4132`. Refresh the page manually after CSS changes.

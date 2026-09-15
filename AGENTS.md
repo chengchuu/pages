@@ -12,7 +12,7 @@ See `README.md` for implemented behavior, usage, and deployment guidance. Follow
 
 Use Node.js 22 or newer. Install and manage dependencies with pnpm; track `pnpm-lock.yaml` and keep `package-lock.json` untracked. Validate installation with `pnpm install --frozen-lockfile`.
 
-Run `npm run lint`, `npm run test`, `npm run build:dev`, and `npm run build` for build changes. `npm run lint:fix` writes files. `npm run dev` serves `/simple/`, `/example/`, and `/link/` at `127.0.0.1:4130`. The `link` page consumes JavaScript from `mazey-polestar` on port `4131` and CSS from `mazey.css` on port `4132`; run both sibling `npm run dev:link` commands while developing it. Restart the server after page/entry additions or removals and configuration edits.
+Run `npm run lint`, `npm run test`, `npm run build:dev`, and `npm run build` for build changes. `npm run lint:fix` writes files. `npm run dev` serves `/simple/`, `/example/`, and `/link/` at `127.0.0.1:4130`. The `link` page consumes JavaScript from `mazey-polestar` on port `4131` and CSS from `mazey.css` on port `4132`; run `npm run dev` in both sibling projects while developing it. Restart the server after page/entry additions or removals and configuration edits.
 
 `scripts/discover-pages.js` discovers immediate page directories; `config/resolve-external-assets.js` validates and merges configuration; `config/ExternalAssetsPlugin.js` injects escaped asset tags through HtmlWebpackPlugin hooks. `webpack.config.js` composes these helpers. `test/build.test.js` builds isolated temporary fixtures using Node's test runner. See README.md for attribute support and script ordering.
 
