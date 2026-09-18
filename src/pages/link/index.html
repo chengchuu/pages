@@ -1,17 +1,26 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>短链接在线生成</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+  </style>
 </head>
 <body>
   <main>
     <h1>短链接在线生成</h1>
-    <div id="tiny-box"></div>
+    <div id="link-box"></div>
   </main>
   <script>
-    window.TINY_FOREIGN_BASE_URL = "";
+    // window.TINY_FOREIGN_BASE_URL = "";
+    window.addEventListener("load", function() {
+      window.LINK_INIT("#link-box", { isGrayBackground: true });
+    });
+    // window.LINK_INIT("#link-box", { isGrayBackground: true });
   </script>
 </body>
 </html>
