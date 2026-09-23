@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const discoverPages = require("./scripts/discover-pages");
 const resolveAssets = require("./config/resolve-external-assets");
 const ExternalAssetsPlugin = require("./config/ExternalAssetsPlugin");
+const siteConfig = require("./config/site.config");
 
 function createConfig(root, mode = "production", serving = false) {
   if (![ "development", "production" ].includes(mode)) throw new Error(`Unsupported Webpack mode: ${mode}`);
@@ -61,12 +62,12 @@ function createConfig(root, mode = "production", serving = false) {
           },
         },
         html,
-        new ExternalAssetsPlugin(assets),
+        new ExternalAssetsPlugin(assets, siteConfig.favicon),
       ],
       // One server serves all page compilers on the same port.
       devServer: pageIndex === 0 ? {
         host: "127.0.0.1",
-        port: 8080,
+        port: 4130,
         static: false,
         historyApiFallback: false,
         hot: false,

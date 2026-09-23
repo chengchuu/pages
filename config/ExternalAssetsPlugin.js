@@ -11,8 +11,9 @@ function escapeAttributes(attributes) {
 }
 
 module.exports = class ExternalAssetsPlugin {
-  constructor(assetsByOutput) {
+  constructor(assetsByOutput, favicon) {
     this.assetsByOutput = assetsByOutput;
+    this.favicon = favicon;
   }
 
   apply(compiler) {
@@ -25,7 +26,10 @@ module.exports = class ExternalAssetsPlugin {
         const scripts = assets.scripts.map((attributes) => HtmlWebpackPlugin.createHtmlTagObject(
           "script", escapeAttributes(attributes),
         ));
-        data.headTags = [ ...styles, ...scripts, ...data.headTags ];
+        const favicon = HtmlWebpackPlugin.createHtmlTagObject(
+          "link", escapeAttributes({ rel: "icon", ...this.favicon }),
+        );
+        data.headTags = [ favicon, ...styles, ...scripts, ...data.headTags ];
         return data;
       });
     });

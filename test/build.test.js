@@ -13,6 +13,14 @@ const validatePages = require("../scripts/validate-pages");
 
 const document = "<!doctype html><html><head><title>Fixture</title></head><body><!-- keep --><h1>Fixture &amp; content</h1></body></html>";
 
+function assertFavicon(html) {
+  const tags = html.match(/<link\b[^>]*\brel="icon"[^>]*>/g) || [];
+  assert.equal(tags.length, 1);
+  assert.ok(tags[0].includes("href=\"https://i.mazey.net/icon/fav/logo-dark-circle-transparent-32x32.png\""));
+  assert.ok(tags[0].includes("type=\"image/png\""));
+  assert.ok(tags[0].includes("sizes=\"32x32\""));
+}
+
 async function write(root, filename, content) {
   const file = path.join(root, filename);
   await fs.mkdir(path.dirname(file), { recursive: true });
@@ -58,6 +66,7 @@ for (const mode of [ "development", "production" ]) {
       assert.ok(localAssets.some((asset) => asset.name.startsWith(`${name}/chunks/`) && asset.name.endsWith(".js")));
       assert.ok(localAssets.some((asset) => asset.name.startsWith(`${name}/assets/`) && asset.name.endsWith(".svg")));
       const html = await fs.readFile(path.join(root, "dist", name, "index.html"), "utf8");
+      assertFavicon(html);
       assert.doesNotMatch(html, /(?:src|href)="\.\.\//);
     }
     assert.deepEqual((await fs.readdir(path.join(root, "dist"))).sort(), [ "first", "second" ]);
@@ -177,6 +186,44 @@ test("missing optional files are normal; zero pages fail clearly", async (t) => 
   assert.throws(() => createConfig(root), /index.js must be a file/);
 });
 
+test("repository Link page is HTML-only and consumes sibling assets", async () => {
+  const root = path.resolve(__dirname, "..");
+  const page = discover(path.join(root, "src/pages")).find(({ name }) => name === "link");
+  assert.ok(page);
+  assert.equal(page.entry, null);
+  assert.deepEqual(page.config.externalAssets, {
+    development: {
+      styles: [ { href: "http://127.0.0.1:4132/link.css" } ],
+      scripts: [ { src: "http://127.0.0.1:4131/link.js", defer: true } ],
+    },
+    production: {
+      styles: [ { href: "https://i.mazey.net/style/lib/link.css" } ],
+      scripts: [ { src: "https://i.mazey.net/polestar/lib/link.js", defer: true } ],
+    },
+  });
+  const html = await fs.readFile(page.template, "utf8");
+  assert.match(html, /id="tiny-box"/);
+  assert.match(html, /window\.TINY_FOREIGN_BASE_URL/);
+});
+
+test("repository Base page is HTML-only and consumes the sibling stylesheet", async () => {
+  const root = path.resolve(__dirname, "..");
+  const page = discover(path.join(root, "src/pages")).find(({ name }) => name === "base");
+  assert.ok(page);
+  assert.equal(page.entry, null);
+  assert.deepEqual(page.config.externalAssets, {
+    development: {
+      styles: [ { href: "http://127.0.0.1:4132/base.css" } ],
+    },
+    production: {
+      styles: [ { href: "https://i.mazey.net/style/lib/base.css" } ],
+    },
+  });
+  const html = await fs.readFile(page.template, "utf8");
+  assert.match(html, /<main class="base base-accent base-info">/);
+  assert.doesNotMatch(html, /<script\b/);
+});
+
 test("served page bundle URLs encode special characters in page names", async (t) => {
   const root = await fixture(t);
   const name = "100% done";
@@ -184,6 +231,7 @@ test("served page bundle URLs encode special characters in page names", async (t
   await write(root, `src/pages/${name}/index.js`, "globalThis.fixture = true;");
   await build(root, "development", undefined, true);
   const html = await fs.readFile(path.join(root, "dist", name, "index.html"), "utf8");
+  assertFavicon(html);
   const urls = [ ...html.matchAll(/src="([^"]+)"/g) ].map((match) => match[1]);
   assert.deepEqual(urls, [ "/100%25%20done/dev-client.js", "/100%25%20done/index.js" ]);
   for (const url of urls) {
@@ -196,6 +244,8 @@ test("startup URLs use discovered pages and the listening address", async (t) =>
   for (const name of [ "z page", "example" ]) await write(root, `src/pages/${name}/index.html`, document);
   const configs = createConfig(root, "development", true);
   assert.equal(configs.filter((config) => config.devServer).length, 1);
+  assert.equal(configs[0].devServer.host, "127.0.0.1");
+  assert.equal(configs[0].devServer.port, 4130);
   for (const [ address, type, origin ] of [
     [ { address: "127.0.0.1", port: 9123 }, "http", "http://127.0.0.1:9123" ],
     [ { address: "::1", port: 9443 }, "https", "https://[::1]:9443" ],

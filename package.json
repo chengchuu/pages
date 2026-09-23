@@ -1,6 +1,6 @@
 {
   "name": "pages",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Independent web pages built with Webpack.",
   "scripts": {
     "dev": "webpack serve --mode development",
