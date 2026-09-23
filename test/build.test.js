@@ -202,7 +202,8 @@ test("repository Link page is HTML-only and consumes sibling assets", async () =
     },
   });
   const html = await fs.readFile(page.template, "utf8");
-  assert.match(html, /id="tiny-box"/);
+  assert.match(html, /id="link-box"/);
+  assert.match(html, /window\.LINK_INIT\("#link-box"/);
   assert.match(html, /window\.TINY_FOREIGN_BASE_URL/);
 });
 
