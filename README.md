@@ -6,14 +6,12 @@ Live Demo deployment target: <https://chengchuu.github.io/pages/>.
 
 ## Install and run
 
-Use Node.js 22 or newer and independently installed pnpm.
-
 ```bash
 pnpm install
 npm run dev
 ```
 
-Open <http://127.0.0.1:4130/simple/> for the HTML-only example or <http://127.0.0.1:4130/example/> for the counter example. There is no root landing page or SPA fallback.
+Open <http://127.0.0.1:4130/simple/> for the HTML-only example, <http://127.0.0.1:4130/example/> for the counter example, or <http://127.0.0.1:4130/base/> for the `mazey.css` base stylesheet demo. There is no root landing page or SPA fallback.
 
 | Command                  | Purpose                                           |
 | :----------------------- | :------------------------------------------------ |
@@ -27,6 +25,20 @@ Open <http://127.0.0.1:4130/simple/> for the HTML-only example or <http://127.0.
 | `npm run test`           | Run Node tests with temporary build fixtures      |
 
 Use pnpm for dependency installation, additions, updates, and removals. Track `pnpm-lock.yaml`; keep `package-lock.json` untracked. Use `pnpm install --frozen-lockfile` to verify the recorded resolution. Use npm for project scripts and `npm pack` for package inspection. GitHub Actions uses `npm install` and npm scripts without npm dependency caching or `npm ci`; npm does not consume the pnpm lockfile.
+
+### Develop the Base page
+
+The Base page keeps its HTML in this project and loads `base.css` from `mazey.css`. Start both development servers:
+
+```bash
+# pages
+npm run dev
+
+# mazey.css
+npm run dev
+```
+
+Open <http://127.0.0.1:4130/base/>. The page loads `base.css` from port `4132`. Refresh the page manually after CSS changes.
 
 ### Develop the Link page
 

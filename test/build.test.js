@@ -206,6 +206,24 @@ test("repository Link page is HTML-only and consumes sibling assets", async () =
   assert.match(html, /window\.TINY_FOREIGN_BASE_URL/);
 });
 
+test("repository Base page is HTML-only and consumes the sibling stylesheet", async () => {
+  const root = path.resolve(__dirname, "..");
+  const page = discover(path.join(root, "src/pages")).find(({ name }) => name === "base");
+  assert.ok(page);
+  assert.equal(page.entry, null);
+  assert.deepEqual(page.config.externalAssets, {
+    development: {
+      styles: [ { href: "http://127.0.0.1:4132/base.css" } ],
+    },
+    production: {
+      styles: [ { href: "https://i.mazey.net/style/lib/base.css" } ],
+    },
+  });
+  const html = await fs.readFile(page.template, "utf8");
+  assert.match(html, /<main class="base base-accent base-info">/);
+  assert.doesNotMatch(html, /<script\b/);
+});
+
 test("served page bundle URLs encode special characters in page names", async (t) => {
   const root = await fixture(t);
   const name = "100% done";

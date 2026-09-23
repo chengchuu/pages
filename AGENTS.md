@@ -2,7 +2,7 @@
 
 ## Project and source ownership
 
-`pages` is a Webpack 5 multi-page frontend project. Read `README.md` for user-facing commands and behavior. The current pages are `example` (JavaScript counter), `simple` (HTML only), and `link` (HTML with external CSS and JavaScript). The live demo target is <https://chengchuu.github.io/pages/>.
+`pages` is a Webpack 5 multi-page frontend project. Read `README.md` for user-facing commands and behavior. The current pages are `base` (HTML with external CSS), `example` (JavaScript counter), `simple` (HTML only), and `link` (HTML with external CSS and JavaScript). The live demo target is <https://chengchuu.github.io/pages/>.
 
 `src/pages/<name>/index.html` is the only required file for a page. `scripts/discover-pages.js` finds immediate page directories, sorts them by name, and detects optional `index.js` and `page.config.js` files independently. Do not add a central page registry or placeholder files. Browser modules and reusable browser logic belong in `src/pages/` and `src/shared/`; build configuration and scripts belong outside `src/`.
 
@@ -36,6 +36,8 @@ The development server has no root landing page or SPA fallback. It adds a reloa
 `scripts/validate-pages.js` checks the root directory's membership, supported local anchor, script, stylesheet, and image references, artifact boundaries, and unwanted development or HTML-only bundles under `/pages/`. It rejects `<base>` elements. It does not fetch external URLs or inspect CSS URLs, `srcset`, or runtime-created references. Verify those separately in a browser when relevant.
 
 ## Link page and external services
+
+`src/pages/base/` is HTML-only. Its `page.config.js` loads development CSS from `http://127.0.0.1:4132/base.css`; production uses the external stylesheet configured in that file. For local Base development, run `npm run dev` in `pages` and `mazey.css`, open <http://127.0.0.1:4130/base/>, and refresh after CSS changes.
 
 `src/pages/link/` is HTML-only. Its `page.config.js` loads development CSS from `http://127.0.0.1:4132/link.css` and JavaScript from `http://127.0.0.1:4131/link.js`; production assets are external URLs configured in that file. For local Link development, run `npm run dev` in `pages`, `mazey-polestar`, and `mazey.css`. Open <http://127.0.0.1:4130/link/> and refresh after CSS changes. Keep the external asset references explicit; Webpack does not bundle those sibling projects.
 
