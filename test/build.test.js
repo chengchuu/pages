@@ -225,6 +225,34 @@ test("repository Base page is HTML-only and consumes the sibling stylesheet", as
   assert.doesNotMatch(html, /<script\b/);
 });
 
+for (const mode of [ "development", "production" ]) {
+  test(`${mode}: Redirect page uses sibling assets and starts without a navigable destination`, async (t) => {
+    const root = await fixture(t);
+    const sourceRoot = path.resolve(__dirname, "../src/pages/redirect");
+    for (const filename of [ "index.html", "page.config.js" ]) {
+      await write(root, `src/pages/redirect/${filename}`, await fs.readFile(path.join(sourceRoot, filename), "utf8"));
+    }
+    const stats = await build(root, mode);
+    assert.deepEqual(stats.assets.map(({ name }) => name), [ "redirect/index.html" ]);
+    const html = await fs.readFile(path.join(root, "dist/redirect/index.html"), "utf8");
+    const stylesheet = mode === "development" ? "http://127.0.0.1:4132/base.css" : "https://i.mazey.net/style/lib/base.css";
+    const script = mode === "development" ? "http://127.0.0.1:4131/redirect.js" : "https://i.mazey.net/polestar/lib/redirect.js";
+    assert.ok(html.includes(stylesheet));
+    assert.ok(html.includes(script));
+    assert.match(html, /<script\b[^>]*defer[^>]*>/);
+    assert.match(html, /class="base base-error"/);
+    assert.match(html, /name=["']?referrer["']?\s+content=["']?no-referrer/);
+    const anchor = html.match(/<a\b[^>]*id=["']?redirect-continue\b[^>]*>/)[0];
+    assert.match(anchor, /\bhidden\b/);
+    assert.doesNotMatch(anchor, /\bhref\s*=/);
+    const destinationAnchor = html.match(/<a\b[^>]*id=["']?redirect-destination\b[^>]*>/)[0];
+    assert.doesNotMatch(destinationAnchor, /\bhref\s*=/);
+    await generatePagesIndex(root);
+    assert.match(await fs.readFile(path.join(root, "dist/index.html"), "utf8"), /\.\/redirect\//);
+    await validatePages(root);
+  });
+}
+
 test("served page bundle URLs encode special characters in page names", async (t) => {
   const root = await fixture(t);
   const name = "100% done";
