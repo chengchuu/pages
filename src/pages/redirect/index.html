@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Continue to destination</title>
+  <style>
+    #redirect p {
+      color: inherit;
+    }
+    #redirect a[href] {
+      color: #0074d9;
+    }
+    @media (prefers-color-scheme: dark) {
+      #redirect a[href] {
+        color: hsl(207.9262672811, 80%, 40.4215686275%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="redirect" class="base base-error">
+    <h1>Continue to destination</h1>
+    <p>This destination has not been verified and may be dangerous. Continuing may open an external website, file, or application.</p>
+    <p id="redirect-status" role="status">The destination is unavailable until this page finishes loading. JavaScript is required.</p>
+    <p><a id="redirect-destination" rel="noreferrer"></a></p>
+    <p><a id="redirect-continue" rel="noreferrer" hidden>Continue</a></p>
+  </main>
+</body>
+</html>

@@ -57,6 +57,29 @@ npm run dev
 
 Open <http://127.0.0.1:4130/link/>. The page loads `link.js` from port `4131` and `link.css` from port `4132`. Refresh the page manually after CSS changes.
 
+### Develop the Redirect page
+
+Run `npm run dev` in `pages`, `mazey-polestar`, and `mazey.css`, then open
+<http://127.0.0.1:4130/redirect/?url=https%3A%2F%2Fexample.com>.
+The page loads `redirect.js` from port `4131` and `base.css` from port `4132`.
+Refresh manually after sibling JavaScript or CSS changes.
+
+Supply exactly one nonempty `url` parameter containing the percent-encoded
+destination. Click the displayed destination or Continue to navigate; the page never redirects
+automatically. It uses Mazey's `isValidUrl()` result exactly: `ftp://example.com`
+and `file://localhost/path` are accepted, while `file:///path`, `mailto:`, and
+`tel:` forms are rejected. Matching custom or executable schemes can also be
+accepted; the information border does not mean the destination is safe.
+Invalid input shows an error border without a navigable Continue link.
+Paragraph text inherits the heading's color in light and dark themes. Both links,
+including visited links, use page-local light and dark colors matching the current
+`base-info` border. These duplicated colors must be updated separately if the
+Base info palette changes.
+
+The destination is visible in the page URL and may appear in history and access
+logs. Browser support determines whether an accepted destination opens. This
+page operates independently and has no backend integration.
+
 ## GitHub Pages
 
 `npm run build:pages` runs the production build, then generates `dist/index.html` from discovered demos. It links to each independent page with relative URLs. The landing page has a static light theme, inline semantic colors, and no JavaScript. Its template belongs to `scripts/generate-pages-index.js`; CSS and the supplied palette pairs belong to `config/pages-index.css` and `config/pages-palette.js`. Only light palette values are emitted.

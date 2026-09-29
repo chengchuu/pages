@@ -2,7 +2,7 @@
 
 ## Project and source ownership
 
-`pages` is a Webpack 5 multi-page frontend project. Read `README.md` for user-facing commands and behavior. The current pages are `base` (HTML with external CSS), `example` (JavaScript counter), `simple` (HTML only), and `link` (HTML with external CSS and JavaScript). The live demo target is <https://chengchuu.github.io/pages/>.
+`pages` is a Webpack 5 multi-page frontend project. Read `README.md` for user-facing commands and behavior. The current pages are `base` (HTML with external CSS), `example` (JavaScript counter), `simple` (HTML only), and `link` and `redirect` (HTML with external CSS and JavaScript). The live demo target is <https://chengchuu.github.io/pages/>.
 
 `src/pages/<name>/index.html` is the only required file for a page. `scripts/discover-pages.js` finds immediate page directories, sorts them by name, and detects optional `index.js` and `page.config.js` files independently. Do not add a central page registry or placeholder files. Browser modules and reusable browser logic belong in `src/pages/` and `src/shared/`; build configuration and scripts belong outside `src/`.
 
@@ -40,6 +40,15 @@ The development server has no root landing page or SPA fallback. It adds a reloa
 `src/pages/base/` is HTML-only. Its `page.config.js` loads development CSS from `http://127.0.0.1:4132/base.css`; production uses the external stylesheet configured in that file. For local Base development, run `npm run dev` in `pages` and `mazey.css`, open <http://127.0.0.1:4130/base/>, and refresh after CSS changes.
 
 `src/pages/link/` is HTML-only. Its `page.config.js` loads development CSS from `http://127.0.0.1:4132/link.css` and JavaScript from `http://127.0.0.1:4131/link.js`; production assets are external URLs configured in that file. For local Link development, run `npm run dev` in `pages`, `mazey-polestar`, and `mazey.css`. Open <http://127.0.0.1:4130/link/> and refresh after CSS changes. Keep the external asset references explicit; Webpack does not bundle those sibling projects.
+
+`src/pages/redirect/` is an HTML-only independent warning page. It consumes
+`base.css` from `mazey.css` and `redirect.js` from `mazey-polestar`, using the
+same three development servers. Open `/redirect/?url=<encoded destination>`
+and refresh manually after sibling asset changes. The external deferred script
+requires exactly one nonempty `url` value and uses Mazey's `isValidUrl()` exactly
+as the final validator. Preserve the explicit Continue action, initial hidden
+anchor without `href`, `.base base-info` valid state, `.base base-error` invalid
+state, and no-referrer policy. Backend integration is outside this feature.
 
 ## Tests and deployment
 
