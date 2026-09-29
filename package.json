@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "webpack serve --mode development",
     "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
     "build:pages": "npm run build && node scripts/generate-pages-index.js",
     "validate:pages": "node scripts/validate-pages.js",
-    "build:dev": "webpack --mode development",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "node --test"
